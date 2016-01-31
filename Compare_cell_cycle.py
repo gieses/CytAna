@@ -111,7 +111,6 @@ else:
 #%%
 #iterate over the different file names
 for peptides, proteins, kinomes in zip(peptide_files, protein_files, kinome_files):
-    break
     #report stores information throughout the analysis
     report = ""
 
