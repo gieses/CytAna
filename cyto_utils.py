@@ -749,6 +749,7 @@ def get_phosphorylated_stats(phospho_peptides):
 
 def probe_protein_abundance(phos_df, reg_df, prot_df, column):
     """
+    **experimental only - not used**
     """
     intersection = np.intersect1d(phospho_peptides["Sequence"],
                                   regular_peptides["Sequence"])
@@ -789,7 +790,6 @@ def probe_protein_abundance(phos_df, reg_df, prot_df, column):
     Hp = (x * (z - y)) / (y * (x - z))
     L = Lp / (1 + Lp)
     H = Hp / (1 + Hp)
-
 
     plt.plot(phosphopep, regulpep, 'ro')
     plt.xlabel("phospho")

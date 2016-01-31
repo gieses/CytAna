@@ -44,6 +44,7 @@ import cyto_utils as cutils
 #==============================================================================
 path = "D:\\Sven\\Dropbox\\VX data for Sven\\SVEN\\"
 fasta_file = "D:\\Sven\\Dropbox\\VX data for Sven\\sprot_2014_08_2014_11.fasta"
+outpath = "D:\\Sven\\"
 
 files = []
 for root, dirnames, filenames in os.walk(path):
@@ -110,6 +111,7 @@ else:
 #%%
 #iterate over the different file names
 for peptides, proteins, kinomes in zip(peptide_files, protein_files, kinome_files):
+    break
     #report stores information throughout the analysis
     report = ""
 
@@ -149,8 +151,8 @@ for peptides, proteins, kinomes in zip(peptide_files, protein_files, kinome_file
         print ratio_i
         dfs.append(cutils.analyze_ratio(phospho_peptides, regular_peptides,
                                         ratio_i, alpha, peptides[:-5]))
-    writer = pd.ExcelWriter(peptides[:-5] + '____overview.xlsx', engine='xlsxwriter')
-    writer = pd.ExcelWriter("D:\\Sven\\test_results.xlsx", engine='xlsxwriter')
+    writer = pd.ExcelWriter(peptides[:-5] + '_overview.xlsx', engine='xlsxwriter')
+    #writer = pd.ExcelWriter(outpath+"_overview.xlsx", engine='xlsxwriter')
 
     #write to single excel sheets in one file
     for i, dataframe_i in enumerate(dfs):
