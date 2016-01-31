@@ -1,0 +1,5 @@
+cyto_utils contains the functions that are called within the analysis scripts
+to create the current results in the folders (overview excel sheets)
+"Compare_cell_cycle.py" is enough to execute.
+
+
