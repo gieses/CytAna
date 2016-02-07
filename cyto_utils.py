@@ -634,7 +634,6 @@ def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
     plt_hist(phospho_filtered[column].values, outfile+"_phospho", column)
     plt_hist(regular_filtered[column].values, outfile+"_regular", column)
 
-
     normalize_df(phospho_filtered, regular_filtered, [column])
     normalize_df(regular_filtered, regular_filtered, [column])
 
@@ -669,10 +668,8 @@ def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
     ax.set_yticks([0, 1, 2, 3],)
     ax.set_yticklabels( ["Phospho", "Norm Phospho", "Regular", "Norm Regular"])
     sns.despine()
-
     save_fig(f, ("{}_{}_boxplot".format(outfile, column)))
      #%%
-
     f, ax = plt.subplots(1, figsize=(11.69, 8.27))
     ax.scatter(phospho_filtered["norm_"+column], phospho_filtered["PEP"])
     ax.set_xlabel("norm_"+column)
@@ -684,7 +681,6 @@ def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
     sns.despine()
      #%%
     save_fig(f, "{}_{}_scatter".format(outfile, column))
-
 
     #get annotation for significant peptides
     phospho_filtered["significant"] = [True if (i >= upper_bound or i <= lower_bound)
@@ -703,7 +699,8 @@ def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
         significants.sort_values(by="significant", inplace=True)
  #%%
     #significants.to_csv("{}_{}.csv".format(outfile, column), sep="\t")
-    return(significants)
+    return((significants, regular_filtered))
+
 
 def add_predicted_groups(phospho_peptides, kinome_df):
     """

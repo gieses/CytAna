@@ -145,22 +145,33 @@ for peptides, proteins, kinomes in zip(peptide_files, protein_files, kinome_file
     #==========================================================================
     #     Analyze and store as single Excel file
     #==========================================================================
-    dfs = []
+    dfs_phosphor = []
+    dfs_regular = []
     for ratio_i in ratios_log:
         print ratio_i
-        dfs.append(cutils.analyze_ratio(phospho_peptides, regular_peptides,
-                                        ratio_i, alpha, peptides[:-5]))
-    writer = pd.ExcelWriter(peptides[:-5] + '_overview.xlsx', engine='xlsxwriter')
-    #writer = pd.ExcelWriter(outpath+"_overview.xlsx", engine='xlsxwriter')
+        temp_dfs = cutils.analyze_ratio(phospho_peptides, regular_peptides,
+                                        ratio_i, alpha, peptides[:-5])
+        dfs_phosphor.append(temp_dfs[0])
+        dfs_regular.append(temp_dfs[1])
 
+    #write the phosphopeptides to a excel sheet
+    writer = pd.ExcelWriter(peptides[:-5] + '_overview.xlsx', engine='xlsxwriter')
     #write to single excel sheets in one file
-    for i, dataframe_i in enumerate(dfs):
+    for i, dataframe_i in enumerate(dfs_phosphor):
         grouped = dataframe_i.groupby(["direction"])
         for j, dataframe_j in grouped:
             dataframe_j.to_excel(writer, sheet_name="{}_{}".format(ratios_log[i], j))
 
         dataframe_i.to_excel(writer, sheet_name=ratios_log[i])
     writer.save()
+
+    #write the non-phosphorylated peptides to an extra file
+    writer = pd.ExcelWriter(peptides[:-5] + '_nonhospho_overview.xlsx', engine='xlsxwriter')
+    #write to single excel sheets in one file
+    for i, dataframe_i in enumerate(dfs_phosphor):
+        dataframe_i.to_excel(writer, sheet_name=ratios_log[i])
+    writer.save()
+
     #get some stats
     frequency_tab = cutils.get_phosphorylated_stats(phospho_peptides)
 
