@@ -144,9 +144,18 @@ def fig_phosints(infile1, infile2, figpath):
 
 
 ##==============================================================================
-## Figure 1: regular peptides vs. phosphopeptides
+## 162 data
 ##==============================================================================
-figpath = "D:\\Sven\\Dropbox\\VX data for Sven\\SVEN\\Figures\\"
+figpath = "D:\\Sven\\Dropbox\\VX data for Sven\\SVEN\\Figures\\CytoNoc\\"
 infile1 = "D:\Sven\Dropbox\VX data for Sven\SVEN\data\ALL162files_Mit_Int_CytoPurA_mix_SCX_TiO2_peptide\ALL162files_Mit_Int_CytoPurA_mix_SCX_TiO2_peptide_overview.xlsx"
 infile2 = "D:\Sven\Dropbox\VX data for Sven\SVEN\data\ALL162files_Mit_Int_CytoPurA_mix_SCX_TiO2_peptide\ALL162files_Mit_Int_CytoPurA_mix_SCX_TiO2_peptide_nonhospho_overview.xlsx"
+fig_phosints(infile1, infile2, figpath)
+
+##==============================================================================
+## Figure 1: regular peptides vs. phosphopeptides
+##==============================================================================
+path = "D:\\Sven\Dropbox\\VX data for Sven\\SVEN\data\\Mit_Int_CytoNoc_mix_IEF_TiO2_peptide\\"
+figpath = "D:\\Sven\\Dropbox\\VX data for Sven\\SVEN\\Figures\\CytoPurA\\"
+infile1 = path + "Mit_Int_CytoNoc_mix_IEF_TiO2_peptide_overview.xlsx"
+infile2 = path + "Mit_Int_CytoNoc_mix_IEF_TiO2_peptide_nonhospho_overview.xlsx"
 fig_phosints(infile1, infile2, figpath)
