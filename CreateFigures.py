@@ -113,17 +113,15 @@ def fig_phosints(infile1, infile2, figpath):
         column = "norm_"+ sheet
         #%%
 
-    #==========================================================================
-    #         Scatterplot: General trend
-    #==========================================================================
+        #======================================================================
+        #         Scatterplot: General trend
+        #======================================================================
         maxx = np.max([np.max(phospho[column]), abs(np.min(phospho[column]))]) + 0.1
         f, ax = plt.subplots(1, figsize=(11.69, 8.27))
-        ax.scatter(regular[column],
-                    np.log10(regular["Area"]), s=80, lw=1, alpha=0.7,
-                    label="Regular peptides")
-        ax.scatter(phospho[column],
-                    np.log10(phospho["Area"]), c="green", s=80, lw=1,
-                    alpha=0.7, label="phospho peptides")
+        ax.scatter(regular[column], np.log10(regular["Area"]), s=80, lw=1,
+                   alpha=0.7, label="Regular peptides")
+        ax.scatter(phospho[column], np.log10(phospho["Area"]), c="green",
+                   s=80, lw=1, alpha=0.7, label="phospho peptides")
         ax.set(title="Normalized peptide Ratios: {}".format(sheet),
                xlabel="log10 (fold change)", ylabel="log10 (intensity)",
                 xlim=(-maxx, maxx))
@@ -142,7 +140,7 @@ def fig_phosints(infile1, infile2, figpath):
         bounds = fig_ratiohisto(xvalues, column, figpath)
 
         #boxplot over all ratios
-        fig_boxplotcomparison(regular, phospho, sheet, column, bounds)
+        fig_boxplotcomparison(regular, phospho, sheet, column, bounds, figpath)
 
 
 ##==============================================================================
