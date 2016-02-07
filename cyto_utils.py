@@ -686,12 +686,14 @@ def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
     save_fig(f, "{}_{}_scatter".format(outfile, column))
 
 
-
+    #get annotation for significant peptides
     phospho_filtered["significant"] = [True if (i >= upper_bound or i <= lower_bound)
                                        else False for i in
                                        phospho_filtered["norm_"+column]]
 
-    phospho_filtered["direction"] = ["Up" if i >= upper_bound else "Down" for
+    #get annotation for the direction, i.e. is the peptide a candidate
+    # for up (fc >= 0) or down (fc <0) regulation
+    phospho_filtered["direction"] = ["Up" if i >= 0 else "Down" for
                                      i in phospho_filtered["norm_"+column]]
 
     if onlysig:
