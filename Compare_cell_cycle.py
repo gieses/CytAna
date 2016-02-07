@@ -168,7 +168,7 @@ for peptides, proteins, kinomes in zip(peptide_files, protein_files, kinome_file
     #write the non-phosphorylated peptides to an extra file
     writer = pd.ExcelWriter(peptides[:-5] + '_nonhospho_overview.xlsx', engine='xlsxwriter')
     #write to single excel sheets in one file
-    for i, dataframe_i in enumerate(dfs_phosphor):
+    for i, dataframe_i in enumerate(dfs_regular):
         dataframe_i.to_excel(writer, sheet_name=ratios_log[i])
     writer.save()
 
