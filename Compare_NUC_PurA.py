@@ -42,6 +42,10 @@ import cyto_utils as cutils
 # - add phosphosite known information (also from PSP)
 # -
 #==============================================================================
+
+#==============================================================================
+# Read data and prepare data structures
+#==============================================================================
 path = "D:\\Sven\\Dropbox\\VX data for Sven\\SVEN\\"
 fasta_file = "D:\\Sven\\Dropbox\\VX data for Sven\\sprot_2014_08_2014_11.fasta"
 outpath = "D:\\Sven\\"
@@ -59,19 +63,9 @@ peptide_files = sorted([i for i in files if (("peptide" in os.path.basename(i)) 
 protein_files = sorted([i for i in files if (("protein" in os.path.basename(i)) and ("overview" not in i) and ("Panther" not in i) and ("CytoPurA_CytoNoc" in i))])
 kinome_files = sorted(kinomes)
 
-print "Los gehts...."
-
-
-#files = glob.glob(path+"*.xlsx")
-#files = [i for i in files if "overview" not in i]
-
-#files = glob.glob(path+"*.xlsx")
-#files = [i for i in files if "overview" not in i]
-
-#peptide_files = sorted([i for i in files if "peptide" in i])
-#protein_files = sorted([i for i in files if "protein" in i])
-
-
+#==============================================================================
+# Start processing
+#==============================================================================
 FASTA_dic = cutils.get_fasta_dic(fasta_file)
 phosphositeDB = cutils.read_phosphosite(path+"\\Phosphosite_data\\Phosphorylation_site_dataset")
 
