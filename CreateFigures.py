@@ -132,17 +132,17 @@ def fig_phosints(infile1, infile2, figpath):
         ax.yaxis.set_major_locator(MaxNLocator(4))
         sns.despine()
         cutils.save_fig(f, figpath+"162_Intensityscatter_{}".format(column))
-    #%%
-    #==========================================================================
-    #         Histogram
-    #==========================================================================
-    #%%
-    fig_ratiohisto(regular[column])
-    xvalues = regular[column].values
+        #%%
+        #======================================================================
+        #         Histogram
+        #======================================================================
+        #%%
+        xvalues = regular[column].values
+        # ratio histogram
+        bounds = fig_ratiohisto(xvalues, column, figpath)
 
-    fig_phosints(infile1, infile2, figpath)
-    bounds = fig_ratiohisto(xvalues, column, figpath)
-    fig_boxplotcomparison(regular, phospho, sheet, column, bounds)
+        #boxplot over all ratios
+        fig_boxplotcomparison(regular, phospho, sheet, column, bounds)
 
 
 ##==============================================================================
