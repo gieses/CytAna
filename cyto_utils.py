@@ -114,7 +114,7 @@ def read_kinase(file_loc="E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\Phosp
     df = pd.read_csv(file_loc, sep="\t")
     return (df)
 
-def read_phosphosite(file_loc="E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\Phosphosite_data\\Kinase_Substrate_Dataset"):
+def read_phosphosite(file_loc="E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\Phosphosite_data\\Phosphorylation_site_dataset"):
     """
     Readsa data from PhosphositePLus and offers it in a dictionary format
     """
@@ -282,7 +282,7 @@ def get_fasta_dic(path="/home/sven/Dropbox/VX data for Sven/sprot_2014_08_2014_1
             seq_dic[fentry.name.split("|")[1]] = fentry.seq
     except:
         seq_dic = {}
-        fasta = HTSeq.FastaReader("E:\\cloud_space\\Dropbox\\VX data for Sven\\sprot_2014_08_2014_11.fasta")
+        fasta = HTSeq.FastaReader(path)
         for fentry in fasta:
             seq_dic[fentry.name.split("|")[1]] = fentry.seq
     return(seq_dic)
