@@ -441,17 +441,17 @@ def explorative_scatter(phospho_peptides):
     #plt.savefig("E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\\exploratory_figures_tables\\{}_compare_states.png".format(filename))
 
 
-def explorative_violin(t):
-    bmap = brewer2mpl.get_map('Paired', 'Qualitative',8).mpl_colors
-    plt.figure(figsize=(18, 12))
-    sns.boxplot(data=t)
-    plt.axhline(0, alpha=0.6, c="k")
-    plt.axhline(0.5, alpha=0.6, c="k")
-    plt.xticks(np.arange(1, len(t)+1), xlabels)
-    plt.xlabel("experiment type (peptide specific)")
-    plt.ylabel("log10(foldchange)")
-    plt.title("unnormalized ratios")
-    #plt.savefig("E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\\exploratory_figures_tables\\{}_visualize_expression_violin.png".format(filename))
+#def explorative_violin(t):
+#    bmap = brewer2mpl.get_map('Paired', 'Qualitative',8).mpl_colors
+#    plt.figure(figsize=(18, 12))
+#    sns.boxplot(data=t)
+#    plt.axhline(0, alpha=0.6, c="k")
+#    plt.axhline(0.5, alpha=0.6, c="k")
+#    plt.xticks(np.arange(1, len(t)+1), xlabels)
+#    plt.xlabel("experiment type (peptide specific)")
+#    plt.ylabel("log10(foldchange)")
+#    plt.title("unnormalized ratios")
+#    #plt.savefig("E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\\exploratory_figures_tables\\{}_visualize_expression_violin.png".format(filename))
 
 
 def get_non_null(dataframe, column=["log10HL", "log10ML", "log10HM"]):
@@ -551,7 +551,7 @@ def filters():
 def computelog(dataframe, ratio_columns=["Heavy/Light", "Medium/Light",
                                          "Heavy/Medium"]):
     """
-    Comute the log10 columns in the dataframe.
+    Comute the log2 columns in the dataframe.
 
     Parameters:
     -----------------------------------------------
@@ -564,7 +564,7 @@ def computelog(dataframe, ratio_columns=["Heavy/Light", "Medium/Light",
     """
     for rc in ratio_columns:
         short = rc[0] + rc.split("/")[1][0]
-        dataframe["log10{}".format(short)] = np.log10(dataframe[rc])
+        dataframe["log2{}".format(short)] = np.log2(dataframe[rc])
 
 
 def get_nonNan(x):
@@ -606,6 +606,66 @@ def plt_correlation(x, y, outfile):
     save_fig(f, ("{}_{}".format(outfile)))
 
 
+def compute_pvalue(expression, thresh, alpha=0.05):
+    """
+    Computes a p-value based on the binomial distribution for expression
+    values.
+    
+    Parameters:
+    ----------------------------------
+    expressions: np-arr,
+                 normalized expression values
+                 
+    thres: float,
+           threshold for significant candidates
+    
+    alpha: float,
+           probability of success for the binomial, also interpreted as
+           alpha.
+    
+    
+    Example:
+    -------------------------------------
+    expression = np.array([1.5, 2.3])
+    alpha = 0.05
+    thresh = 1.3
+    compute_pvalue(expression, thresh, alpha=0.05)
+    """
+    
+    #count the cases
+    #ndown = [1 if exp_i <= thresh_i else 0  for exp_i in zip(expression, thresh_i)]
+    ndown = expression[expression <= - thresh].shape[0]
+    nup = expression[expression >= thresh].shape[0]
+    nneutral = expression.shape[0] - ndown - nup
+    
+    #get the one with most peptide
+    ns = np.array([nup, ndown, nneutral])
+    max_idx = np.argmax(ns)
+    
+    
+    if max_idx == 0:
+        direction = "up"
+        
+    elif max_idx == 1:
+        direction = "down"
+        
+    else:
+        direction = "neutral"
+    
+    #n number of trails for binomial
+    ntrials = len(expression)
+    #k success
+    ksuccess = ns[max_idx]
+    x = np.arange(ksuccess, ntrials + 1)
+    
+    #compute the pvalue as number of cases as extreme (and higher)
+    #as the one observed
+    pvalue = np.sum(stat.binom.pmf(x, ntrials, alpha))
+    
+    res_vec = pd.Series([pvalue, direction, ntrials, k])
+    res_vec.index(["pvalue", "direction", "ntrials", "ksuccess"])
+    return(res_vec)
+    
 def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
                   outfile, onlysig=False):
     """
@@ -643,7 +703,7 @@ def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
  #%%
     f, ax = plt.subplots(1, figsize=(11.69, 8.27))
     temp_df = pd.DataFrame()
-    temp_df["Log10Ratio"] = [value_i for value_i in list(phospho_filtered[column])
+    temp_df["Log2Ratio"] = [value_i for value_i in list(phospho_filtered[column])
                                             + list(phospho_filtered["norm_"+column])
                                             + list(regular_filtered[column])
                                             + list(regular_filtered["norm_"+column])]
@@ -656,7 +716,7 @@ def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
 
 
     #flierprops = dict(marker='o', markersize=5, color="k")
-    ax = sns.boxplot(x="Log10Ratio", y="identifier", data=temp_df)
+    ax = sns.boxplot(x="Log2Ratio", y="identifier", data=temp_df)
 
 #    ax.boxplot([phospho_filtered[column], phospho_filtered["norm_"+column],
 #                 regular_filtered[column], regular_filtered["norm_"+column]])
@@ -697,9 +757,14 @@ def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
     else:
         significants = phospho_filtered.copy()
         significants.sort_values(by="significant", inplace=True)
- #%%
+        
+    print "Lower bound: {}".format(lower_bound)
+    print "Upper bound: {}".format(upper_bound)
+    bounds = pd.Series([lower_bound, upper_bound])
+    bounds.index = ["lower", "upper"]
+	#%%
     #significants.to_csv("{}_{}.csv".format(outfile, column), sep="\t")
-    return((significants, regular_filtered))
+    return((significants, regular_filtered, bounds))
 
 
 def add_predicted_groups(phospho_peptides, kinome_df):
