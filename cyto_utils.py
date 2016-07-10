@@ -1,18 +1,14 @@
 # global variables
 multiple_sites = 0
-import glob
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import re
-import os
 import brewer2mpl
 import HTSeq
 from scipy.stats import norm
 import scipy.stats as stat
-import matplotlib as mpl
-import itertools
 
 
 def venn_diagram(sets, names):
@@ -37,15 +33,24 @@ def venn_diagram(sets, names):
         f = venn3_circles(sets)
     return (f)
 
+
 def save_fig(f, out):
     """
-    Codes for saving a figre
+    Code for saving a figure in png/svg/pdf format.
+
+    Parameters:
+    ----------------------------------------
+    f: figure,
+       matplotlib figure object
+    out: str,
+         outpath to save the figure.
     """
     f.savefig(out+".png", bbox_inches='tight', pad_inches=0.1)
     f.savefig(out+".svg", bbox_inches='tight', pad_inches=0.1)
     f.savefig(out+".pdf", bbox_inches='tight', pad_inches=0.1)
     f.clf()
     plt.close()
+
 
 def get_color_map(name, map_type, number, reverse=False, get_map=False):
     """
@@ -114,6 +119,7 @@ def read_kinase(file_loc="E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\Phosp
     df = pd.read_csv(file_loc, sep="\t")
     return (df)
 
+
 def read_phosphosite(file_loc="E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\Phosphosite_data\\Phosphorylation_site_dataset"):
     """
     Readsa data from PhosphositePLus and offers it in a dictionary format
@@ -132,6 +138,7 @@ def read_kinome_explorer(infile):
     df_kinome = pd.read_csv(infile, sep="\t")
     df_kinome = df_kinome.set_index("substrate")
     return(df_kinome)
+
 
 def add_known_pssite(phospho_df, phosphositeDB, fasta_dic):
     """
@@ -416,44 +423,6 @@ def get_sequence_window(peptide, accession, fastadb, sites, window=7,
     return(";".join(window_seqs))
 
 
-def explorative_scatter(phospho_peptides):
-    f, ax = plt.subplots(1, 2, figsize=(18, 12))
-    ax[0].scatter(phospho_peptides["log10HL"],
-                  phospho_peptides["log10ML"], c="g", alpha=0.3,
-                  label="MitCyt/IntCyt")
-
-    ax[0].scatter(phospho_peptides["log10HL"],
-                  phospho_peptides["log10HM"], c="b", alpha=0.3,
-                  label="MitCyt/MitInt")
-    ax[0].legend(loc="lower left")
-    ax[0].set(xlabel="log10 ratio (HL)", ylabel="log10 ratio (ML and HM)")
-
-    ax[1].scatter(phospho_peptides["log10ML"],
-                  phospho_peptides["log10HM"], c="y", alpha=0.3,
-                  label="IntCyt/MitInt")
-
-    ax[1].scatter(phospho_peptides["log10ML"],
-                  phospho_peptides["log10HL"],
-                  c="g", alpha=0.3, label="IntCyt/MitCyt")
-
-    ax[1].legend(loc="lower left")
-    ax[1].set(xlabel="log10 ratio (ML)", ylabel="log10 ratio (HM and HL)")
-    #plt.savefig("E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\\exploratory_figures_tables\\{}_compare_states.png".format(filename))
-
-
-#def explorative_violin(t):
-#    bmap = brewer2mpl.get_map('Paired', 'Qualitative',8).mpl_colors
-#    plt.figure(figsize=(18, 12))
-#    sns.boxplot(data=t)
-#    plt.axhline(0, alpha=0.6, c="k")
-#    plt.axhline(0.5, alpha=0.6, c="k")
-#    plt.xticks(np.arange(1, len(t)+1), xlabels)
-#    plt.xlabel("experiment type (peptide specific)")
-#    plt.ylabel("log10(foldchange)")
-#    plt.title("unnormalized ratios")
-#    #plt.savefig("E:\\cloud_space\\Dropbox\\VX data for Sven\\SVEN\\exploratory_figures_tables\\{}_visualize_expression_violin.png".format(filename))
-
-
 def get_non_null(dataframe, column=["log10HL", "log10ML", "log10HM"]):
     """
     Gets all the values from a pandas series that are not null.
@@ -517,6 +486,10 @@ def get_phospho(mod_str, position=False):
 
 
 def filters():
+    """
+    DELETE IF NOT USED FOR FINAL ANALYSIS
+    #TODO
+    """
     print "Get filtered peptides...."
     #False if Nan
     HL_filter = pd.notnull(peptides_df["Heavy/Light"])
@@ -610,20 +583,20 @@ def compute_pvalue(expression, thresh, alpha=0.05):
     """
     Computes a p-value based on the binomial distribution for expression
     values.
-    
+
     Parameters:
     ----------------------------------
     expressions: np-arr,
                  normalized expression values
-                 
+
     thres: float,
            threshold for significant candidates
-    
+
     alpha: float,
            probability of success for the binomial, also interpreted as
            alpha.
-    
-    
+
+
     Example:
     -------------------------------------
     expression = np.array([1.5, 2.3])
@@ -631,41 +604,41 @@ def compute_pvalue(expression, thresh, alpha=0.05):
     thresh = 1.3
     compute_pvalue(expression, thresh, alpha=0.05)
     """
-    
+
     #count the cases
     #ndown = [1 if exp_i <= thresh_i else 0  for exp_i in zip(expression, thresh_i)]
     ndown = expression[expression <= - thresh].shape[0]
     nup = expression[expression >= thresh].shape[0]
     nneutral = expression.shape[0] - ndown - nup
-    
+
     #get the one with most peptide
     ns = np.array([nup, ndown, nneutral])
     max_idx = np.argmax(ns)
-    
-    
+
+
     if max_idx == 0:
         direction = "up"
-        
+
     elif max_idx == 1:
         direction = "down"
-        
+
     else:
         direction = "neutral"
-    
+
     #n number of trails for binomial
     ntrials = len(expression)
     #k success
     ksuccess = ns[max_idx]
     x = np.arange(ksuccess, ntrials + 1)
-    
+
     #compute the pvalue as number of cases as extreme (and higher)
     #as the one observed
     pvalue = np.sum(stat.binom.pmf(x, ntrials, alpha))
-    
-    res_vec = pd.Series([pvalue, direction, ntrials, k])
+
+    res_vec = pd.Series([pvalue, direction, ntrials, ksuccess])
     res_vec.index(["pvalue", "direction", "ntrials", "ksuccess"])
     return(res_vec)
-    
+
 def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
                   outfile, onlysig=False):
     """
@@ -757,7 +730,7 @@ def analyze_ratio(phospho_peptides, regular_peptides, column, alpha,
     else:
         significants = phospho_filtered.copy()
         significants.sort_values(by="significant", inplace=True)
-        
+
     print "Lower bound: {}".format(lower_bound)
     print "Upper bound: {}".format(upper_bound)
     bounds = pd.Series([lower_bound, upper_bound])

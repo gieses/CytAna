@@ -30,6 +30,7 @@ import glob
 import pandas as pd
 import numpy as np
 import os
+import sys
 import cyto_utils as cutils
 
 #    TODO
@@ -42,8 +43,8 @@ import cyto_utils as cutils
 #==============================================================================
 # set paths and get input files
 #==============================================================================
-path = "D:\\Sven\\Dropbox\\VX data for Sven\\SVEN\\"
-fasta_file = "D:\\Sven\\Dropbox\\VX data for Sven\\sprot_2014_08_2014_11.fasta"
+path = "D:\\Sven\\Dropbox\\shared_folders\\nurhan\\VX data for Sven\\SVEN\\"
+fasta_file = "D:\\Sven\\Dropbox\\shared_folders\\nurhan\\VX data for Sven\\sprot_2014_08_2014_11.fasta"
 outpath = "D:\\Sven\\"
 
 files = []
@@ -73,8 +74,8 @@ phosphositeDB = cutils.read_phosphosite(path+"\\Phosphosite_data\\Phosphorylatio
 
 reports = []
 ratios_default = ["Heavy/Medium", "Heavy/Light", "Medium/Light"]
-ratios_log = ['log10HL', u'log10ML', u'log10HM']
-ratios_norm = ['norm_log10HL', u'norm_log10ML', u'norm_log10HM']
+ratios_log = ['log2HL', u'log2ML', u'log2HM']
+ratios_norm = ['norm_log2HL', u'norm_log2ML', u'norm_log2HM']
 alpha = 0.05
 columns = [u'# Proteins', 'Sequence', u'# Protein Groups', u'Protein Group Accessions',
            u'Modifications', u'MH+ [Da]', u'phosphoRS Isoform Probability',
@@ -103,6 +104,7 @@ if execute:
                                  "{}\\kinome_{}.csv".format(dirname, suffix), fasta_file)
 else:
     pass
+sys.exit()
 
 #%%
 #==============================================================================

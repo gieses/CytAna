@@ -65,7 +65,7 @@ def fig_ratiohisto(xvalues, column, figpath):
     ax.set_xlim(-1.5, 1.5)
     ax.xaxis.set_major_locator(MaxNLocator(4))
     ax.yaxis.set_major_locator(MaxNLocator(4))
-    ax.set(xlabel="log10 (foldchange)", ylabel="Density", title="Normalized peptides ratio {}".format(column))
+    ax.set(xlabel="log2 (foldchange)", ylabel="Density", title="Normalized peptides ratio {}".format(column))
     ax.axvline(lower_bound, ls="--", lw=2, color="red", alpha=0.7)
     ax.axvline(upper_bound, ls="--", lw=2, color="red", alpha=0.7)
     sns.despine()
@@ -94,7 +94,7 @@ def fig_boxplotcomparison(regular, phospho, sheet, column, bounds, figpath):
     sns.boxplot(x="peptide type", y=column, data=df, palette=bmap)
     ax.set(xticks=[0, 1, 2, 3],
            xticklabels=["peptides", "peptides \n(normalized)", "phospho-\npeptides", "phosphopeptides \n(normalized)"])
-    ax.set(ylim=(-2, 2), ylabel="log10 (fold change)", title=column)
+    ax.set(ylim=(-2, 2), ylabel="log2 (fold change)", title=column)
     ax.axhline(lower_bound, ls="--", lw=2, color="red", alpha=0.7)
     ax.axhline(upper_bound, ls="--", lw=2, color="red", alpha=0.7)
     ax.yaxis.set_major_locator(MaxNLocator(4))
@@ -102,12 +102,14 @@ def fig_boxplotcomparison(regular, phospho, sheet, column, bounds, figpath):
     cutils.save_fig(f, figpath+"162_BoxplotNorm_{}".format(column))
     #%%
 
-def fig_phosints(infile1, infile2, figpath):
+def fig_phosints(infile1, infile2, figpath, labels=3):
     """
     Visualize the non-phospgorylated vs. phosphorylated peptide ratios.
     """
-    #sheetnames = ["log10HL", "log10HM", "log10ML"]
-    sheetnames = ["log10HL"]
+    if labels==3:
+        sheetnames = ["log2HL", "log2HM", "log2ML"]
+    else:
+        sheetnames = ["log2HL"]
     for sheet in sheetnames:
         phospho = pd.read_excel(infile1, sheetname=sheet)
         regular = pd.read_excel(infile2, sheetname=sheet)
@@ -124,7 +126,7 @@ def fig_phosints(infile1, infile2, figpath):
         ax.scatter(phospho[column], np.log10(phospho["Area"]), c="green",
                    s=80, lw=1, alpha=0.7, label="phospho peptides")
         ax.set(title="Normalized peptide Ratios: {}".format(sheet),
-               xlabel="log10 (fold change)", ylabel="log10 (intensity)",
+               xlabel="log2 (fold change)", ylabel="log10 (intensity)",
                 xlim=(-maxx, maxx))
         ax.legend(loc="upper left")
         ax.xaxis.set_major_locator(MaxNLocator(4))
@@ -169,11 +171,11 @@ path = "D:\\Sven\\Dropbox\\shared_folders\\nurhan\\VX data for Sven\\SVEN\May_20
 figpath = "D:\\Sven\\Dropbox\\shared_folders\\nurhan\\VX data for Sven\\SVEN\May_2016_new cytokinesis files\\PH_NL"
 infile1 = path + "PH_NL_peptides_overview.xlsx"
 infile2 = path + "PH_NL_peptides_nonhospho_overview.xlsx"
-fig_phosints(infile1, infile2, figpath)
+fig_phosints(infile1, infile2, figpath, 3)
 
 
 path = "D:\\Sven\\Dropbox\\shared_folders\\nurhan\\VX data for Sven\\SVEN\May_2016_new cytokinesis files\\"
 figpath = "D:\\Sven\\Dropbox\\shared_folders\\nurhan\\VX data for Sven\\SVEN\May_2016_new cytokinesis files\\PL_NH"
 infile1 = path + "PL_NH_peptides_nonhospho_overview.xlsx"
 infile2 = path + "PL_NH_peptides_overview.xlsx"
-fig_phosints(infile1, infile2, figpath)
+fig_phosints(infile1, infile2, figpath, 2)
