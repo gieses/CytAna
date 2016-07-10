@@ -177,12 +177,3 @@ figpath = "D:\\Sven\\Dropbox\\shared_folders\\nurhan\\VX data for Sven\\SVEN\May
 infile1 = path + "PL_NH_peptides_nonhospho_overview.xlsx"
 infile2 = path + "PL_NH_peptides_overview.xlsx"
 fig_phosints(infile1, infile2, figpath)
-
-
-
-import pandas as pd
-
-conn = "localhost"
-dbname ="testdb"
-df = pd.read_csv("C:\\temp\\test.csv", sep="\t")
-df.to_sql()
